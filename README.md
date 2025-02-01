@@ -1,7 +1,7 @@
 # go-github-releaser
 
 > [!TIP]
-> only shells out to run `go build`, sums, zipping and github are all internal to the binary
+> only shells out to run `go build`; hasing, zipping and github api are built in
 
 Simple cli tool to cross-compile a go program, optionally sum the files, compress and cut a release with the output.
 
