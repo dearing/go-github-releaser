@@ -55,7 +55,7 @@ var releaseName = flag.String("release-name", "", "github release name")
 var releaseMessage = flag.String("release-message", "", "github release message")
 var releaseDraft = flag.Bool("release-draft", true, "github release draft")
 var releasePrerelease = flag.Bool("release-prerelease", false, "github release prerelease")
-var releaseCommitish = flag.String("release-commitish", "", "github release commitish")
+var releaseCommitish = flag.String("release-commitish", "", "github release commitish") // this is a dumb name from github, consider renaming
 
 func main() {
 
@@ -65,7 +65,6 @@ func main() {
 
 	if !*skipBuild {
 
-		// look for a go-github-releaser.csv file
 		file, err := os.Open(*csvFile)
 		if err != nil {
 			fmt.Printf("error opening file: %v\n", err)
@@ -73,7 +72,6 @@ func main() {
 		}
 		defer file.Close()
 
-		// read the file
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			line := scanner.Text()
@@ -158,17 +156,14 @@ func doBuild(goOS, goARCH, target string) error {
 
 	cmd := exec.Command("go", "build", "-o", target, *srcDir)
 
-	// set environment variables
 	cmd.Env = append(os.Environ(),
 		"GOOS="+goOS,
 		"GOARCH="+goARCH,
 	)
 
-	// Save the original stdout and stderr
 	origStdout := os.Stdout
 	origStderr := os.Stderr
 
-	// Restore stdout and stderr after completion
 	defer func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr
@@ -195,7 +190,6 @@ func doMD5(target string) error {
 		return errors.New("error hashing file")
 	}
 
-	// Remove the build directory prefix from the target
 	relativeTarget, err := filepath.Rel(*outDir, target)
 	if err != nil {
 		return errors.New("error getting relative path")
@@ -203,7 +197,6 @@ func doMD5(target string) error {
 
 	sum := hash.Sum(nil)
 
-	// write the sum to a file
 	sumFile, err := os.Create(target + ".md5.txt")
 	if err != nil {
 		return errors.New("error creating sum file")
@@ -231,7 +224,6 @@ func doSHA1(target string) error {
 		return errors.New("error hashing file")
 	}
 
-	// Remove the build directory prefix from the target
 	relativeTarget, err := filepath.Rel(*outDir, target)
 	if err != nil {
 		return errors.New("error getting relative path")
@@ -239,7 +231,6 @@ func doSHA1(target string) error {
 
 	sum := hash.Sum(nil)
 
-	// write the sum to a file
 	sumFile, err := os.Create(target + ".sha1.txt")
 	if err != nil {
 		return errors.New("error creating sum file")
@@ -267,7 +258,6 @@ func doSHA256(target string) error {
 		return errors.New("error hashing file")
 	}
 
-	// Remove the build directory prefix from the target
 	relativeTarget, err := filepath.Rel(*outDir, target)
 	if err != nil {
 		return errors.New("error getting relative path")
@@ -275,7 +265,6 @@ func doSHA256(target string) error {
 
 	sum := hash.Sum(nil)
 
-	// write the sum to a file
 	sumFile, err := os.Create(target + ".sha256.txt")
 	if err != nil {
 		return errors.New("error creating sum file")
@@ -321,7 +310,7 @@ func doZip(target string) error {
 
 func cut(owner, repos string) error {
 
-	token := os.Getenv("GITHUB_TOKEN") // Best practice: store token in environment variable
+	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
 		log.Fatal("GITHUB_TOKEN environment variable not set")
 	}
@@ -347,7 +336,6 @@ func cut(owner, repos string) error {
 
 	log.Printf("created release %s\n", *release.HTMLURL)
 
-	// upload each file in the outDir
 	f := os.DirFS(*outDir)
 	err = fs.WalkDir(f, ".", func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
