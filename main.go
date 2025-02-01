@@ -22,7 +22,7 @@ import (
 	"github.com/google/go-github/v68/github"
 )
 
-var version = "0.2.0"
+var version = "0.2.1"
 
 // csv file build-matrix
 var csvFile = flag.String("csv-file", "go-github-releaser.csv", "csv file with build information")
