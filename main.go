@@ -1,19 +1,11 @@
 package main
 
 import (
-	"archive/zip"
 	"bufio"
-	"crypto/md5"
-	"crypto/sha1"
-	"crypto/sha256"
-	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
@@ -34,8 +26,16 @@ var sumSHA256 = flag.Bool("sum-sha256", false, "create sha256 sum file")
 // produce a zip file for each binary
 var zipFile = flag.Bool("zip", false, "create zip file")
 
+func usage() {
+	fmt.Println("go-github-releaser is a tool to build go binaries for multiple platforms and create checksums and zip files")
+	fmt.Fprintf(os.Stderr, "usage: go-github-releaser [flags]\n")
+	flag.PrintDefaults()
+	os.Exit(2)
+}
+
 func main() {
 
+	flag.Usage = usage
 	flag.Parse()
 
 	fmt.Printf("github.com/dearing/go-github-releaser version %s\n", version)
@@ -108,169 +108,4 @@ func do(goOS, goARCH, target string) {
 			fmt.Printf("error creating zip: %s: %v\n", target, err)
 		}
 	}
-}
-
-func doBuild(goOS, goARCH, target string) error {
-
-	cmd := exec.Command("go", "build", "-o", target, *srcDir)
-
-	// set environment variables
-	cmd.Env = append(os.Environ(),
-		"GOOS="+goOS,
-		"GOARCH="+goARCH,
-	)
-
-	// Save the original stdout and stderr
-	origStdout := os.Stdout
-	origStderr := os.Stderr
-
-	// Restore stdout and stderr after completion
-	defer func() {
-		os.Stdout = origStdout
-		os.Stderr = origStderr
-	}()
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err := cmd.Run()
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func doMD5(target string) error {
-	file, err := os.Open(target)
-	if err != nil {
-		return errors.New("error opening file")
-	}
-	defer file.Close()
-
-	hash := md5.New()
-	if _, err := io.Copy(hash, file); err != nil {
-		return errors.New("error hashing file")
-	}
-
-	// Remove the build directory prefix from the target
-	relativeTarget, err := filepath.Rel(*outDir, target)
-	if err != nil {
-		return errors.New("error getting relative path")
-	}
-
-	sum := hash.Sum(nil)
-
-	// write the sum to a file
-	sumFile, err := os.Create(target + ".md5.txt")
-	if err != nil {
-		return errors.New("error creating sum file")
-	}
-	defer sumFile.Close()
-
-	content := fmt.Sprintf("%x  %s\n", sum, relativeTarget)
-	_, err = sumFile.WriteString(content)
-	if err != nil {
-		return errors.New("error writing sum file")
-	}
-
-	return nil
-}
-
-func doSHA1(target string) error {
-	file, err := os.Open(target)
-	if err != nil {
-		return errors.New("error opening file")
-	}
-	defer file.Close()
-
-	hash := sha1.New()
-	if _, err := io.Copy(hash, file); err != nil {
-		return errors.New("error hashing file")
-	}
-
-	// Remove the build directory prefix from the target
-	relativeTarget, err := filepath.Rel(*outDir, target)
-	if err != nil {
-		return errors.New("error getting relative path")
-	}
-
-	sum := hash.Sum(nil)
-
-	// write the sum to a file
-	sumFile, err := os.Create(target + ".sha1.txt")
-	if err != nil {
-		return errors.New("error creating sum file")
-	}
-	defer sumFile.Close()
-
-	content := fmt.Sprintf("%x  %s\n", sum, relativeTarget)
-	_, err = sumFile.WriteString(content)
-	if err != nil {
-		return errors.New("error writing sum file")
-	}
-
-	return nil
-}
-
-func doSHA256(target string) error {
-	file, err := os.Open(target)
-	if err != nil {
-		return errors.New("error opening file")
-	}
-	defer file.Close()
-
-	hash := sha256.New()
-	if _, err := io.Copy(hash, file); err != nil {
-		return errors.New("error hashing file")
-	}
-
-	// Remove the build directory prefix from the target
-	relativeTarget, err := filepath.Rel(*outDir, target)
-	if err != nil {
-		return errors.New("error getting relative path")
-	}
-
-	sum := hash.Sum(nil)
-
-	// write the sum to a file
-	sumFile, err := os.Create(target + ".sha256.txt")
-	if err != nil {
-		return errors.New("error creating sum file")
-	}
-	defer sumFile.Close()
-
-	content := fmt.Sprintf("%x  %s\n", sum, relativeTarget)
-	_, err = sumFile.WriteString(content)
-	if err != nil {
-		return errors.New("error writing sum file")
-	}
-
-	return nil
-}
-
-func doZip(target string) error {
-	zipFile, err := os.Create(target + ".zip")
-	if err != nil {
-		return errors.New("error creating zip file")
-	}
-	defer zipFile.Close()
-
-	zipWriter := zip.NewWriter(zipFile)
-	defer zipWriter.Close()
-
-	fileToZip, err := os.Open(target)
-	if err != nil {
-		return errors.New("error opening file to zip")
-	}
-	defer fileToZip.Close()
-
-	w, err := zipWriter.Create(filepath.Base(target))
-	if err != nil {
-		return errors.New("error creating zip entry")
-	}
-
-	if _, err := io.Copy(w, fileToZip); err != nil {
-		return errors.New("error writing to zip")
-	}
-
-	return nil
 }
