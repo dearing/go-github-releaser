@@ -8,7 +8,7 @@ Simple cli tool to cross-compile a go program, optionally sum the files, compres
 export GITHUB_TOKEN=blah
 ```
 ---
-```shell
+```
 $ go-github-releaser -h
 Usage of go-github-releaser:
   -csv-file string
