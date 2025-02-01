@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-var version = "0.0.0"
+var version = "0.1.0"
 
 // csv file build-matrix
 var csvFile = flag.String("csv-file", "go-github-releaser.csv", "csv file with build information")
