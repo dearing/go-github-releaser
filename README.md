@@ -1,11 +1,56 @@
 # go-github-releaser
 
-Simple cli tool to cross-compile a go program, archive them and produce sums fit for release at github.com.
+Simple cli tool to cross-compile a go program, optionally sum the files, compress and cut a release with the output.
 
 - go version go1.23.5
+---
+```
+export GITHUB_TOKEN=blah
+```
+---
+```shell
+go-github-releaser -h
+Usage of go-github-releaser:
+  -csv-file string
+        csv file with build information (default "go-github-releaser.csv")
+  -cut-release
+        cut a github release
+  -github-owner string
+        github owner
+  -github-repos string
+        github repos
+  -out-dir string
+        binary output directory (default "build")
+  -release-commitish string
+        github release commitish
+  -release-draft
+        github release draft (default true)
+  -release-message string
+        github release message
+  -release-name string
+        github release name
+  -release-prerelease
+        github release prerelease
+  -release-tag string
+        github release tag
+  -skip-build
+        skip the build step
+  -src-dir string
+        go source directory (default ".")
+  -sum-md5
+        create md5 sum file
+  -sum-sha1
+        create sha1 sum file
+  -sum-sha256
+        create sha256 sum file
+  -zip
+        create zip file
+```
+
+---
 
 ```
-go tool dist list
+$ go tool dist list
 aix/ppc64
 android/386
 android/amd64
