@@ -3,7 +3,7 @@
 simple cli tool to cross-compile a go program, optionally sum the files, compress and cut a release with the output
 
 > [!TIP]
-> only shells out to run `go build`; hasing, zipping and github api are built in
+> only shells out to run `go build`; hashing, zipping and github api are built in
 
 > [!WARNING]
 > CGO and complex builds not supported.
