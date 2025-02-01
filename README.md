@@ -9,7 +9,7 @@ export GITHUB_TOKEN=blah
 ```
 ---
 ```shell
-go-github-releaser -h
+$ go-github-releaser -h
 Usage of go-github-releaser:
   -csv-file string
         csv file with build information (default "go-github-releaser.csv")
