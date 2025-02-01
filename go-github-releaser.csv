@@ -1,0 +1,5 @@
+os,arch,name,archive,sha1
+darwin,amd64,go-github-releaser,tar.gz,TRUE
+linux,amd64,go-github-releaser,tar.gz,TRUE
+linux,arm64,go-github-releaser,tar.gz,TRUE
+windows,amd64,go-github-releaser.exe,zip,TRUE
