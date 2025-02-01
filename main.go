@@ -97,9 +97,9 @@ func main() {
 		}
 	}
 
-	start := time.Now()
-	log.Printf("cutting release %s\n%s", *releaseTag, *releaseCommitish)
 	if *cutRelease {
+		start := time.Now()
+		log.Printf("cutting release %s\n%s", *releaseTag, *releaseCommitish)
 		err := cut(*githubOwner, *githubRepos)
 		if err != nil {
 			fmt.Printf("error: %v\n", err)
