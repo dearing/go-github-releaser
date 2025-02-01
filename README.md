@@ -10,8 +10,10 @@ Simple cli tool to cross-compile a go program, optionally sum the files, compres
 
 - go version go1.23.5
 
+```
+go install github.com/dearing/go-github-releaser@latest
+```
 ---
-
 ```
 export GITHUB_TOKEN=blah
 ```
