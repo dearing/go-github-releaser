@@ -1,7 +1,7 @@
 # go-github-releaser
 
 Simple cli tool to cross-compile a go program, optionally sum the files, compress and cut a release with the output.
-> [!WARN]
+> [!WARNING]
 > CGO and complex builds not supported.
 - go version go1.23.5
 ---
