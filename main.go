@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 var version = "0.1.0"
@@ -63,49 +64,56 @@ func main() {
 
 		target := fmt.Sprintf("%s/%s", *outDir, name)
 
-		do(goOS, goARCH, target)
+		start := time.Now()
+		err := do(goOS, goARCH, target)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+			continue
+		}
+
+		log.Printf("  operation took %s\n", time.Since(start))
 	}
 
 }
 
-func do(goOS, goARCH, target string) {
+func do(goOS, goARCH, target string) error {
 
 	log.Printf("building %s/%s %s\n", goOS, goARCH, target)
 	err := doBuild(goOS, goARCH, target)
 	if err != nil {
-		fmt.Printf("error building: %s: %v\n", target, err)
-		return
+		return fmt.Errorf("building: %s: %v", target, err)
 	}
 
 	if *sumMD5 {
-		log.Printf("creating md5sum for %s\n", target)
+		log.Printf("  creating md5sum for %s\n", target)
 		err = doMD5(target)
 		if err != nil {
-			fmt.Printf("error creating md5: %s: %v\n", target, err)
+			return fmt.Errorf("creating md5: %s: %v", target, err)
 		}
 	}
 
 	if *sumSHA1 {
-		log.Printf("creating sha1sum for %s\n", target)
+		log.Printf("  creating sha1sum for %s\n", target)
 		err = doSHA1(target)
 		if err != nil {
-			fmt.Printf("error creating sha1sum: %s: %v\n", target, err)
+			return fmt.Errorf("creating sha1: %s: %v", target, err)
 		}
 	}
 
 	if *sumSHA256 {
-		log.Printf("creating sha256sum for %s\n", target)
+		log.Printf("  creating sha256sum for %s\n", target)
 		err = doSHA256(target)
 		if err != nil {
-			fmt.Printf("error creating sha256sum: %s: %v\n", target, err)
+			return fmt.Errorf("creating sha256: %s: %v", target, err)
 		}
 	}
 
 	if *zipFile {
-		log.Printf("creating zip for %s\n", target)
+		log.Printf("  creating zip for %s\n", target)
 		err = doZip(target)
 		if err != nil {
-			fmt.Printf("error creating zip: %s: %v\n", target, err)
+			return fmt.Errorf("creating zip: %s: %v", target, err)
 		}
 	}
+	return nil
 }
