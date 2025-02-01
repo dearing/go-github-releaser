@@ -1,10 +1,17 @@
 # go-github-releaser
 
+> [!INFO]
+> only shells out to run `go build`, sums, zipping and github are all internal to the binary
+
 Simple cli tool to cross-compile a go program, optionally sum the files, compress and cut a release with the output.
+
 > [!WARNING]
 > CGO and complex builds not supported.
+
 - go version go1.23.5
+
 ---
+
 ```
 export GITHUB_TOKEN=blah
 ```
